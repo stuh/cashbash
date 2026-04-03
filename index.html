@@ -411,7 +411,7 @@
 
       <div id="numbers"></div>
       <div class="input-row">
-        <input id="entry" type="text" placeholder="type a number, hit enter" autocomplete="off" autofocus>
+        <input id="entry" type="text" inputmode="decimal" placeholder="type a number, hit enter" autocomplete="off" autofocus>
       </div>
 
       <hr class="receipt-divider">
@@ -492,6 +492,7 @@
 
         const val = document.createElement('input');
         val.type = 'text';
+        val.inputMode = 'decimal';
         val.value = formatNumber(n);
         val.className = 'row-input';
         val.addEventListener('blur', () => {
@@ -543,6 +544,7 @@
 
         const amountInput = document.createElement('input');
         amountInput.type = 'text';
+        amountInput.inputMode = 'decimal';
         amountInput.className = 'deduction-amount';
         amountInput.value = d.amount !== null ? formatNumber(d.amount) : '';
         amountInput.placeholder = '0';
