@@ -179,7 +179,6 @@
 
     #total {
       font-size: 22px;
-      font-weight: 600;
       color: #1a55a0;
     }
 
@@ -281,7 +280,6 @@
 
     #grand-total {
       font-size: 28px;
-      font-weight: 700;
       color: #1a6b3a;
       cursor: pointer;
       user-select: none;
@@ -596,18 +594,29 @@
       grandTotalEl.classList.toggle('negative', remaining < 0);
     });
 
+    function commitEntry() {
+      const raw = entryEl.value.trim().replace(/,/g, '');
+      const n = parseFloat(raw);
+      if (raw !== '' && !isNaN(n)) {
+        numbers.push(n);
+        entryEl.value = '';
+        renderNumbers();
+        return true;
+      } else if (raw !== '') {
+        entryEl.style.color = '#cc3333';
+        setTimeout(() => { entryEl.style.color = '#1a6b3a'; }, 400);
+      }
+      return false;
+    }
+
+    entryEl.addEventListener('blur', () => {
+      commitEntry();
+    });
+
     entryEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const raw = entryEl.value.trim().replace(/,/g, '');
-        const n = parseFloat(raw);
-        if (raw !== '' && !isNaN(n)) {
-          numbers.push(n);
-          entryEl.value = '';
-          renderNumbers();
-        } else if (raw !== '') {
-          entryEl.style.color = '#cc3333';
-          setTimeout(() => { entryEl.style.color = '#1a6b3a'; }, 400);
-        }
+        commitEntry();
+        e.preventDefault();
       } else if (e.key === 'Backspace' && entryEl.value === '' && numbers.length > 0) {
         numbers.pop();
         renderNumbers();
