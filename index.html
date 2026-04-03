@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CashBash</title>
+  <title>CashBash 🧾</title>
+  <meta name="description" content="Bash in the cash. A simple till roll calculator for counting up your takings and working out what to bank.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
@@ -105,14 +106,14 @@
 
     .number-row .delete-btn {
       position: absolute;
-      left: -18px;
+      right: -13px;
       opacity: 0;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 20px;
       color: #cc3333;
-      padding: 1px 3px;
       transition: opacity 0.15s;
       user-select: none;
+      line-height: 1;
     }
 
     .number-row:hover .delete-btn {
@@ -198,14 +199,14 @@
 
     .deduction-row .delete-btn {
       position: absolute;
-      left: -18px;
+      right: -13px;
       opacity: 0;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 20px;
       color: #cc3333;
-      padding: 1px 3px;
       transition: opacity 0.15s;
       user-select: none;
+      line-height: 1;
     }
 
     .deduction-row:hover .delete-btn {
@@ -343,6 +344,7 @@
     #roll-footer {
       text-align: center;
       padding: 10px 0 6px;
+      margin-top: 16px;
       font-size: 10px;
       color: #ccc;
       letter-spacing: 0.08em;
@@ -354,6 +356,27 @@
       text-decoration: none;
       font-size: 10px;
       letter-spacing: 0.06em;
+    }
+
+    #clear-btn {
+      display: block;
+      margin: 6px auto 0;
+      background: none;
+      border: 1px dashed #ddd;
+      color: #bbb;
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    #clear-btn:hover {
+      color: #cc3333;
+      border-color: #cc3333;
     }
 
     #contact:hover {
@@ -410,6 +433,7 @@
       </div>
 
       <div id="roll-footer">* * * thank you * * *<br><a href="mailto:stuart@northcolour.com" id="contact">stuart@northcolour.com</a></div>
+      <button id="clear-btn">clear</button>
     </div>
 
     <!-- Wavy bottom edge -->
@@ -429,7 +453,7 @@
     const addDeductionBtn = document.getElementById('add-deduction');
 
     let numbers = [];
-    let deductions = [{ label: 'Till Float', amount: null }];
+    let deductions = [{ label: 'Till Float', amount: 0 }];
 
     function formatNumber(n) {
       return n.toFixed(2);
@@ -597,6 +621,15 @@
 
     renderNumbers();
     renderDeductions();
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      numbers = [];
+      deductions = [{ label: 'Till Float', amount: 0 }];
+      entryEl.value = '';
+      renderNumbers();
+      renderDeductions();
+      entryEl.focus();
+    });
 
     const copyConfirmEl = document.getElementById('copy-confirm');
     grandTotalEl.addEventListener('click', () => {
