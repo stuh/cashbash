@@ -5,30 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CashBash</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Mono", "Menlo", monospace;
-      background: #f5f5f0;
-      color: #1a1a1a;
+      font-family: "Share Tech Mono", "Courier New", monospace;
+      background: #d6d0c4;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0,0,0,0.03) 24px, rgba(0,0,0,0.03) 25px),
+        repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(0,0,0,0.02) 24px, rgba(0,0,0,0.02) 25px);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 60px 20px 40px;
+      padding: 40px 20px 80px;
     }
 
-    #app {
+    /* Till roll wrapper */
+    #roll {
       width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+      max-width: 360px;
+      position: relative;
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.22));
     }
 
+    /* Wavy edge via SVG */
+    .roll-edge {
+      display: block;
+      width: 100%;
+      height: 18px;
+    }
+
+    #roll-body {
+      background: #fffef9;
+      padding: 8px 28px 12px;
+      /* Subtle vertical lines like thermal paper */
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.012) 3px,
+        rgba(0,0,0,0.012) 4px
+      );
+    }
+
+    /* Branding */
+    #branding {
+      text-align: center;
+      padding: 12px 0 10px;
+    }
+
+    #branding h1 {
+      font-family: "Pacifico", cursive;
+      font-size: 30px;
+      color: #1a1a1a;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+
+    #branding p {
+      font-size: 10px;
+      color: #888;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .receipt-divider {
+      border: none;
+      border-top: 1px dashed #bbb;
+      margin: 8px 0;
+    }
+
+    .receipt-divider.double {
+      border-top: 1px solid #999;
+      margin-bottom: 1px;
+    }
+    .receipt-divider.double + .receipt-divider.double {
+      margin-top: 0;
+      margin-bottom: 8px;
+      border-top: 1px solid #999;
+    }
+
+    /* Numbers list */
     #numbers {
       display: flex;
       flex-direction: column;
@@ -38,27 +99,18 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      padding: 6px 12px;
-      font-size: 22px;
-      color: #1a1a1a;
-      border-radius: 6px;
-      transition: background 0.1s;
+      padding: 2px 0;
       position: relative;
-    }
-
-    .number-row:hover {
-      background: #e8e8e2;
     }
 
     .number-row .delete-btn {
       position: absolute;
-      left: -24px;
+      left: -18px;
       opacity: 0;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 12px;
       color: #cc3333;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 1px 3px;
       transition: opacity 0.15s;
       user-select: none;
     }
@@ -72,7 +124,7 @@
       border: none;
       outline: none;
       color: #1a1a1a;
-      font-size: 22px;
+      font-size: 18px;
       font-family: inherit;
       text-align: right;
       width: 100%;
@@ -83,15 +135,13 @@
     .row-input:focus {
       color: #1a6b3a;
       cursor: text;
-      caret-color: #1a6b3a;
     }
 
+    /* Entry row */
     .input-row {
       display: flex;
       justify-content: flex-end;
-      align-items: center;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 2px 0;
     }
 
     #entry {
@@ -99,7 +149,7 @@
       border: none;
       outline: none;
       color: #1a6b3a;
-      font-size: 22px;
+      font-size: 18px;
       font-family: inherit;
       text-align: right;
       width: 100%;
@@ -107,20 +157,8 @@
     }
 
     #entry::placeholder {
-      color: #aaa;
-    }
-
-    .divider {
-      height: 2px;
-      background: #ccc;
-      margin: 8px 12px;
-      border-radius: 2px;
-    }
-
-    .divider.thin {
-      height: 1px;
-      background: #e0e0d8;
-      margin: 4px 12px;
+      color: #ccc;
+      font-size: 13px;
     }
 
     /* Total row */
@@ -128,51 +166,44 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 8px 12px 4px;
+      padding: 4px 0 2px;
     }
 
     #total-label {
-      font-size: 13px;
-      color: #777;
+      font-size: 11px;
+      color: #999;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
     }
 
     #total {
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 600;
       color: #1a55a0;
     }
 
-    /* Deductions section */
+    /* Deductions */
     #deductions {
       display: flex;
       flex-direction: column;
-      margin-top: 4px;
     }
 
     .deduction-row {
       display: flex;
       align-items: center;
-      padding: 5px 12px;
-      border-radius: 6px;
-      gap: 8px;
+      padding: 2px 0;
+      gap: 6px;
       position: relative;
-    }
-
-    .deduction-row:hover {
-      background: #e8e8e2;
     }
 
     .deduction-row .delete-btn {
       position: absolute;
-      left: -24px;
+      left: -18px;
       opacity: 0;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 12px;
       color: #cc3333;
-      padding: 2px 4px;
-      border-radius: 4px;
+      padding: 1px 3px;
       transition: opacity 0.15s;
       user-select: none;
     }
@@ -186,11 +217,11 @@
       background: transparent;
       border: none;
       outline: none;
-      color: #777;
-      font-size: 13px;
+      color: #999;
+      font-size: 11px;
       font-family: inherit;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       cursor: default;
       min-width: 0;
     }
@@ -205,10 +236,10 @@
       border: none;
       outline: none;
       color: #b03030;
-      font-size: 22px;
+      font-size: 18px;
       font-family: inherit;
       text-align: right;
-      width: 160px;
+      width: 120px;
       caret-color: #b03030;
       cursor: default;
     }
@@ -217,25 +248,19 @@
       cursor: text;
     }
 
-    /* Add deduction button */
     #add-deduction {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
+      font-size: 11px;
+      color: #ccc;
       cursor: pointer;
-      color: #aaa;
-      font-size: 13px;
-      border-radius: 6px;
-      transition: color 0.15s;
+      padding: 3px 0;
       user-select: none;
+      letter-spacing: 0.05em;
+      transition: color 0.15s;
       width: fit-content;
-      align-self: flex-start;
-      margin-top: 2px;
     }
 
     #add-deduction:hover {
-      color: #777;
+      color: #999;
     }
 
     /* Grand total */
@@ -243,19 +268,18 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 8px 12px 4px;
-      margin-top: 4px;
+      padding: 6px 0 4px;
     }
 
     #grand-total-label {
-      font-size: 13px;
-      color: #777;
+      font-size: 11px;
+      color: #999;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
     }
 
     #grand-total {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
       color: #1a6b3a;
       cursor: pointer;
@@ -270,11 +294,15 @@
     #copy-confirm {
       position: absolute;
       right: 0;
-      top: -22px;
+      top: -32px;
       font-size: 11px;
-      color: #1a6b3a;
+      color: #fff;
+      background: #1a6b3a;
+      padding: 3px 8px;
+      border-radius: 5px;
       opacity: 0;
-      transition: opacity 0.3s;
+      transform: translateY(4px);
+      transition: opacity 0.2s, transform 0.2s;
       pointer-events: none;
       white-space: nowrap;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -282,8 +310,19 @@
       letter-spacing: 0.05em;
     }
 
+    #copy-confirm::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      right: 10px;
+      border-width: 4px 4px 0;
+      border-style: solid;
+      border-color: #1a6b3a transparent transparent;
+    }
+
     #copy-confirm.show {
       opacity: 1;
+      transform: translateY(0);
     }
 
     #grand-total.negative {
@@ -300,62 +339,75 @@
       animation: copy-flash 0.35s ease-out;
     }
 
-    #branding {
+    /* Footer on the roll */
+    #roll-footer {
       text-align: center;
-      margin-bottom: 32px;
-    }
-
-    #branding h1 {
-      font-family: "Pacifico", cursive;
-      font-size: 36px;
-      color: #1a55a0;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-    }
-
-    #branding p {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 4px;
+      padding: 10px 0 6px;
+      font-size: 10px;
+      color: #ccc;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
     }
 
     .hint {
       text-align: center;
-      margin-top: 40px;
-      font-size: 12px;
-      color: #bbb;
-      line-height: 1.8;
+      margin-top: 24px;
+      font-size: 11px;
+      color: #aaa;
+      letter-spacing: 0.04em;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
   </style>
 </head>
 <body>
-  <div id="branding">
-    <h1>CashBash</h1>
-    <p>Bash in the cash &amp; get yourself to the bank</p>
-  </div>
-  <div id="app">
-    <div id="numbers"></div>
-    <div class="input-row">
-      <input id="entry" type="text" placeholder="type a number..." autocomplete="off" autofocus>
-    </div>
-    <div class="divider"></div>
-    <div id="total-row">
-      <span id="total-label">Total</span>
-      <span id="total">0</span>
+
+  <div id="roll">
+    <!-- Wavy top edge -->
+    <svg class="roll-edge" viewBox="0 0 360 18" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,18 Q9,4 18,18 Q27,4 36,18 Q45,4 54,18 Q63,4 72,18 Q81,4 90,18 Q99,4 108,18 Q117,4 126,18 Q135,4 144,18 Q153,4 162,18 Q171,4 180,18 Q189,4 198,18 Q207,4 216,18 Q225,4 234,18 Q243,4 252,18 Q261,4 270,18 Q279,4 288,18 Q297,4 306,18 Q315,4 324,18 Q333,4 342,18 Q351,4 360,18 L360,18 L0,18 Z" fill="#fffef9"/>
+    </svg>
+
+    <div id="roll-body">
+      <div id="branding">
+        <h1>CashBash</h1>
+        <p>Bash in the cash &amp; get yourself to the bank</p>
+      </div>
+
+      <hr class="receipt-divider">
+
+      <div id="numbers"></div>
+      <div class="input-row">
+        <input id="entry" type="text" placeholder="type a number, hit enter" autocomplete="off" autofocus>
+      </div>
+
+      <hr class="receipt-divider">
+
+      <div id="total-row">
+        <span id="total-label">Total</span>
+        <span id="total">0.00</span>
+      </div>
+
+      <div id="deductions"></div>
+      <div id="add-deduction">+ add deduction</div>
+
+      <hr class="receipt-divider double">
+      <hr class="receipt-divider double">
+
+      <div id="grand-total-row">
+        <span id="grand-total-label">To Be Banked</span>
+        <span id="grand-total">0.00<span id="copy-confirm">copied!</span></span>
+      </div>
+
+      <div id="roll-footer">* * * thank you * * *</div>
     </div>
 
-    <div id="deductions"></div>
-    <div id="add-deduction">+ add deduction</div>
-
-    <div class="divider"></div>
-    <div id="grand-total-row">
-      <span id="grand-total-label">To Be Banked</span>
-      <span id="grand-total">0<span id="copy-confirm">copied!</span></span>
-    </div>
+    <!-- Wavy bottom edge -->
+    <svg class="roll-edge" viewBox="0 0 360 18" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 Q9,14 18,0 Q27,14 36,0 Q45,14 54,0 Q63,14 72,0 Q81,14 90,0 Q99,14 108,0 Q117,14 126,0 Q135,14 144,0 Q153,14 162,0 Q171,14 180,0 Q189,14 198,0 Q207,14 216,0 Q225,14 234,0 Q243,14 252,0 Q261,14 270,0 Q279,14 288,0 Q297,14 306,0 Q315,14 324,0 Q333,14 342,0 Q351,14 360,0 L360,0 L0,0 Z" fill="#fffef9"/>
+    </svg>
   </div>
-  <div class="hint">Enter to add &nbsp;·&nbsp; Backspace on empty line removes last &nbsp;·&nbsp; Click × to delete any</div>
+
+  <div class="hint">Enter to add &nbsp;·&nbsp; Backspace removes last &nbsp;·&nbsp; Click × to delete any</div>
 
   <script>
     const numbersEl = document.getElementById('numbers');
@@ -366,7 +418,6 @@
     const addDeductionBtn = document.getElementById('add-deduction');
 
     let numbers = [];
-    // Each deduction: { label: string, amount: number|null }
     let deductions = [{ label: 'Till Float', amount: null }];
 
     function formatNumber(n) {
@@ -383,11 +434,9 @@
 
     function updateTotals() {
       const total = getTotal();
-      const deductionTotal = getDeductionTotal();
-      const remaining = total - deductionTotal;
-
+      const remaining = total - getDeductionTotal();
       totalEl.textContent = formatNumber(total);
-      grandTotalEl.textContent = formatNumber(remaining);
+      grandTotalEl.childNodes[0].textContent = formatNumber(remaining);
       grandTotalEl.classList.toggle('negative', remaining < 0);
     }
 
@@ -400,7 +449,6 @@
         const del = document.createElement('span');
         del.className = 'delete-btn';
         del.textContent = '×';
-        del.title = 'Remove';
         del.addEventListener('click', () => {
           numbers.splice(i, 1);
           renderNumbers();
@@ -411,9 +459,7 @@
         val.type = 'text';
         val.value = formatNumber(n);
         val.className = 'row-input';
-        val.addEventListener('focus', () => row.style.background = '#ddeeff');
         val.addEventListener('blur', () => {
-          row.style.background = '';
           const raw = val.value.trim().replace(/,/g, '');
           const parsed = parseFloat(raw);
           if (raw !== '' && !isNaN(parsed)) {
@@ -465,9 +511,7 @@
         amountInput.className = 'deduction-amount';
         amountInput.value = d.amount !== null ? formatNumber(d.amount) : '';
         amountInput.placeholder = '0';
-        amountInput.addEventListener('focus', () => row.style.background = '#ddeeff');
         amountInput.addEventListener('blur', () => {
-          row.style.background = '';
           const raw = amountInput.value.trim().replace(/,/g, '');
           const parsed = parseFloat(raw);
           if (raw !== '' && !isNaN(parsed)) {
@@ -499,7 +543,6 @@
     addDeductionBtn.addEventListener('click', () => {
       deductions.push({ label: '', amount: null });
       renderDeductions();
-      // Focus the label of the new row
       const rows = deductionsEl.querySelectorAll('.deduction-row');
       const lastLabel = rows[rows.length - 1].querySelector('.deduction-label');
       lastLabel.focus();
@@ -512,7 +555,7 @@
       const total = getTotal() + pending;
       const remaining = total - getDeductionTotal();
       totalEl.textContent = formatNumber(total);
-      grandTotalEl.textContent = formatNumber(remaining);
+      grandTotalEl.childNodes[0].textContent = formatNumber(remaining);
       grandTotalEl.classList.toggle('negative', remaining < 0);
     });
 
@@ -525,8 +568,8 @@
           entryEl.value = '';
           renderNumbers();
         } else if (raw !== '') {
-          entryEl.style.color = '#f38ba8';
-          setTimeout(() => { entryEl.style.color = '#a6e3a1'; }, 400);
+          entryEl.style.color = '#cc3333';
+          setTimeout(() => { entryEl.style.color = '#1a6b3a'; }, 400);
         }
       } else if (e.key === 'Backspace' && entryEl.value === '' && numbers.length > 0) {
         numbers.pop();
@@ -547,11 +590,13 @@
     const copyConfirmEl = document.getElementById('copy-confirm');
     grandTotalEl.addEventListener('click', () => {
       const value = grandTotalEl.childNodes[0].textContent.trim();
+      grandTotalEl.classList.remove('copied');
+      void grandTotalEl.offsetWidth;
+      grandTotalEl.classList.add('copied');
+      setTimeout(() => grandTotalEl.classList.remove('copied'), 350);
       navigator.clipboard.writeText(value).then(() => {
         copyConfirmEl.classList.add('show');
         setTimeout(() => copyConfirmEl.classList.remove('show'), 1500);
-        grandTotalEl.classList.add('copied');
-        setTimeout(() => grandTotalEl.classList.remove('copied'), 350);
       });
     });
   </script>
