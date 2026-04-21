@@ -381,6 +381,27 @@
       color: #999;
     }
 
+    #speak-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px auto 0;
+      cursor: pointer;
+      user-select: none;
+      color: #aaa;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #speak-toggle input[type="checkbox"] {
+      accent-color: #1a6b3a;
+      width: 12px;
+      height: 12px;
+      cursor: pointer;
+    }
+
     .hint {
       text-align: center;
       margin-top: 24px;
@@ -440,9 +461,37 @@
     </svg>
   </div>
 
+  <label id="speak-toggle"><input type="checkbox" id="speak-checkbox"> speak numbers as entered</label>
   <div class="hint">Enter to add &nbsp;·&nbsp; Backspace removes last &nbsp;·&nbsp; Click × to delete any</div>
 
   <script>
+    // --- Speech ---
+    const speakCheckbox = document.getElementById('speak-checkbox');
+    speakCheckbox.checked = localStorage.getItem('cashbash-speak') === 'true';
+    speakCheckbox.addEventListener('mousedown', (e) => e.preventDefault());
+    speakCheckbox.addEventListener('change', () => {
+      localStorage.setItem('cashbash-speak', speakCheckbox.checked);
+      entryEl.focus();
+    });
+
+    function speakAmount(n) {
+      if (!speakCheckbox.checked || !window.speechSynthesis) return;
+      const pounds = Math.floor(Math.abs(n));
+      const pence = Math.round((Math.abs(n) - pounds) * 100);
+      let phrase;
+      if (pence === 0) {
+        phrase = (n < 0 ? 'minus ' : '') + pounds + ' pound' + (pounds !== 1 ? 's' : '');
+      } else if (pounds === 0) {
+        phrase = (n < 0 ? 'minus ' : '') + pence + 'p';
+      } else {
+        phrase = (n < 0 ? 'minus ' : '') + pounds + ' pound' + (pounds !== 1 ? 's' : '') + ' ' + pence;
+      }
+      const utt = new SpeechSynthesisUtterance(phrase);
+      utt.rate = 1.1;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utt);
+    }
+
     const numbersEl = document.getElementById('numbers');
     const entryEl = document.getElementById('entry');
     const totalEl = document.getElementById('total');
@@ -602,6 +651,7 @@
         entryEl.value = '';
         renderNumbers();
         entryEl.focus();
+        setTimeout(() => speakAmount(n), 0);
         return true;
       } else if (raw !== '') {
         entryEl.style.color = '#cc3333';
